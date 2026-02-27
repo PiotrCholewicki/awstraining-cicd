@@ -257,7 +257,7 @@ You also need to update task.json and replace **arn:aws:secretsmanager:eu-centra
 Then, please make sure that **BACKEND_EMEA_TEST_SMOKETEST_BACKEND_PASSWORD** repository secret is set to "welt", as this is the password for the above test user, that will be used for smoke tests.
 
 You also need to make sure that our smoke tests will be calling our application.
-The access to our application occurs via load balancer. You have to copy **DNS of the load balancer** by going to AWS -> EC2 -> Load balancers and selecting the DNS of our application load balancer. Thi DNS must be then added to the **EMEA-TEST-config.properties** file in our project. Just replace the **<<TODO: set url>>** placeholder. **REMEMBER TO PUSH YOUR CHANGES!**
+The access to our application occurs via load balancer. You have to copy **DNS of the load balancer** by going to AWS -> EC2 -> Load balancers and selecting the DNS of our application load balancer. Thi DNS must be then added to the **EMEA-TEST-config.properties** file in our project. Just replace the **backend-lb-222556234.eu-central-1.elb.amazonaws.com** placeholder. **REMEMBER TO PUSH YOUR CHANGES!**
 
 Make sure that you have also:
 * Replaced 060758616165 in the whole project (replace all in all files) with your AWS Account ID
