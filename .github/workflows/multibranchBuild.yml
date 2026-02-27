@@ -47,7 +47,11 @@ jobs:
 
       # Maven build + tests + JaCoCo
       - name: Build with Maven
-        run: mvn clean package -DskipTests=false
+        run: |
+          mvn clean package -DskipTests=false
+          mvn clean verify -Dhub=EMEA -Denvironment=TEST
+        
+        
 
       # Configure AWS credentials
       - name: Configure AWS profile
