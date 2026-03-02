@@ -40,14 +40,14 @@
       ],
       "secrets": [
         {
-          "valueFrom": "backend-secretsmanager-test-eu-central-1",
+          "valueFrom": "arn:aws:secretsmanager:eu-central-1:060758616165:secret:backend-secretsmanager-test-eu-central-1",
           "name": "SPRING_APPLICATION_JSON"
         }
       ],
       "cpu": 1024,
       "memory": 2048,
       "memoryReservation": 1024,
-      "image": "<<TODO: set ECR image address>>",
+      "image": "060758616165.dkr.ecr.eu-central-1.amazonaws.com/backend:latest",
       "dockerLabels": {
         "PROMETHEUS_EXPORTER_PORT": "8081",
         "PROMETHEUS_EXPORTER_PATH": "/backend/status/v1/prometheus",
@@ -57,7 +57,7 @@
       "name": "backend"
     }
   ],
-  "taskRoleArn": "<<TODO: set task role ARN>>",
+  "taskRoleArn": "arn:aws:iam::060758616165:role/backend-ecs-task-role-eu-central-1",
   "requiresCompatibilities": ["FARGATE"],
   "networkMode": "awsvpc",
   "memory": "2048",
