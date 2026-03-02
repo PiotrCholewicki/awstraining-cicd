@@ -64,27 +64,6 @@ jobs:
           aws-secret-access-key: ${{ env.AWS_SECRET }}
           aws-region: ${{ env.REGION }}
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ env.AWS_KEY }}
-          aws-secret-access-key: ${{ env.AWS_SECRET }}
-          aws-region: ${{ env.REGION }}
-
-      - name: Ensure Secrets Manager value exists (create or update)
-        run: |
-          set -e
-          SECRET_ID="backend-secretsmanager-test-eu-central-1"
-          SECRET_VALUE='{"username":"backend-user","password":"example-pass"}'
-          
-          echo "Creating/updating secret value for $SECRET_ID ..."
-          aws secretsmanager put-secret-value \
-            --secret-id "$SECRET_ID" \
-            --secret-string "$SECRET_VALUE"
-          
-          echo "Verifying..."
-          aws secretsmanager get-secret-value --secret-id "$SECRET_ID" --query SecretString --output text
-
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
