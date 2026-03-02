@@ -64,23 +64,26 @@ jobs:
           aws-secret-access-key: ${{ env.AWS_SECRET }}
           aws-region: ${{ env.REGION }}
 
-          run: |
-            SECRET_ID="backend-secretsmanager-test-eu-central-1"
-            SECRET_VALUE='{"username":"backend-user","password":"example-pass"}'
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ env.AWS_KEY }}
+          aws-secret-access-key: ${{ env.AWS_SECRET }}
+          aws-region: ${{ env.REGION }}
 
-            echo "Checking if secret has any value..."
-
-            if aws secretsmanager get-secret-value --secret-id "$SECRET_ID" >/dev/null 2>&1; then
-              echo "Secret exists and has a value. Updating..."
-              aws secretsmanager put-secret-value \
-                --secret-id "$SECRET_ID" \
-                --secret-string "$SECRET_VALUE"
-            else
-              echo "Secret exists but has NO value. Creating first version..."
-              aws secretsmanager put-secret-value \
-                --secret-id "$SECRET_ID" \
-                --secret-string "$SECRET_VALUE"
-            fi
+      - name: Ensure Secrets Manager value exists (create or update)
+        run: |
+          set -e
+          SECRET_ID="backend-secretsmanager-test-eu-central-1"
+          SECRET_VALUE='{"username":"backend-user","password":"example-pass"}'
+          
+          echo "Creating/updating secret value for $SECRET_ID ..."
+          aws secretsmanager put-secret-value \
+            --secret-id "$SECRET_ID" \
+            --secret-string "$SECRET_VALUE"
+          
+          echo "Verifying..."
+          aws secretsmanager get-secret-value --secret-id "$SECRET_ID" --query SecretString --output text
 
       - name: Login to Amazon ECR
         id: login-ecr
