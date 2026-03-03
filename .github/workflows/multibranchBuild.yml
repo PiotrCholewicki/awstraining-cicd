@@ -8,8 +8,17 @@ on:
       - release/*
       - feature/*
       - bugfix/*
+
   workflow_dispatch:
     inputs:
+      env:
+        description: Select test environment
+        required: true
+        type: choice
+        options:
+          - BACKEND_EMEA_TEST
+          - BACKEND_US_TEST
+
       skipSmokeTests:
         description: Should skip smoke tests?
         type: boolean
@@ -17,10 +26,11 @@ on:
         default: false
 
 jobs:
+
   properties:
     uses: ./.github/workflows/datacenterMap.yml
     with:
-      hubEnv: BACKEND_EMEA_TEST
+      hubEnv: ${{ inputs.env }}
     secrets: inherit
 
   buildTestDeploy:
@@ -28,19 +38,18 @@ jobs:
     needs: properties
     env:
       AWS_ACCOUNT: ${{ needs.properties.outputs.AWS_ACCOUNT }}
-      AWS_KEY:  ${{ secrets.BACKEND_EMEA_TEST_AWS_KEY }}
-      AWS_SECRET: ${{ secrets.BACKEND_EMEA_TEST_AWS_SECRET }}
+      AWS_KEY:  ${{ secrets[format('{0}_AWS_KEY', inputs.env)] }}
+      AWS_SECRET: ${{ secrets[format('{0}_AWS_SECRET', inputs.env)] }}
       REGION: ${{ needs.properties.outputs.REGION }}
       CLUSTER_NAME: ${{ needs.properties.outputs.CLUSTER_NAME }}
       SERVICE_NAME: ${{ needs.properties.outputs.SERVICE_NAME }}
       SKIP_SMOKE_TESTS: ${{ (github.event.inputs.skipSmokeTests != null && github.event.inputs.skipSmokeTests == 'true') || 'false' }}
-      SMOKETEST_BACKEND_PASSWORD: ${{ secrets.BACKEND_EMEA_TEST_SMOKETEST_BACKEND_PASSWORD }}
+      SMOKETEST_BACKEND_PASSWORD: ${{ secrets[format('{0}_SMOKETEST_BACKEND_PASSWORD', inputs.env)] }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          # Disabling shallow clone is recommended for improving relevancy of reporting
           fetch-depth: 0
 
       - name: JDK 17 setup
@@ -82,7 +91,7 @@ jobs:
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: assembly-fargate/src/main/resources/fargate/BACKEND_EMEA_TEST/task.json
+          task-definition: assembly-fargate/src/main/resources/fargate/${{ inputs.env }}/task.json
           service: ${{ env.SERVICE_NAME }}
           cluster: ${{ env.CLUSTER_NAME }}
           wait-for-service-stability: true
@@ -90,12 +99,11 @@ jobs:
       - name: Run smoke tests
         if: ${{ env.SKIP_SMOKE_TESTS == 'false' }}
         run: |
-          mvn -f pom.xml clean test -P st,BACKEND_EMEA_TEST
+          mvn -f pom.xml clean test -P st,${{ inputs.env }}
 
   pipelinePassed:
     runs-on: ubuntu-latest
     needs: buildTestDeploy
     steps:
       - name: All passed
-        run: |
-          echo "All steps have passed."
+        run: echo "All steps have passed."

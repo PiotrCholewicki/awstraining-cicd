@@ -10,6 +10,7 @@ on:
         type: choice
         options:
           - 'BACKEND_EMEA_TEST'
+          - 'BACKEND_US_TEST'
 
 
 jobs:
