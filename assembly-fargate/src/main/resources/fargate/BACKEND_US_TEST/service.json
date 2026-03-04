@@ -12,14 +12,8 @@
   "healthCheckGracePeriodSeconds": 30,
   "networkConfiguration": {
     "awsvpcConfiguration": {
-      "subnets": [
-        "subnet-09fa026ba9bd31774",
-        "subnet-073c2fd94d5170f77"
-      ],
-      "securityGroups": [
-        "sg-03324df4aec308c2e",
-        "sg-07ffb4b2cc490372b"
-      ],
+      "subnets": [],
+      "securityGroups": [],
       "assignPublicIp": "DISABLED"
     }
   }

@@ -3,6 +3,18 @@
   "executionRoleArn": "arn:aws:iam::060758616165:role/backend-ecs-execution-role-us-east-1",
   "containerDefinitions": [
     {
+      "name": "backend",
+      "image": "060758616165.dkr.ecr.us-east-1.amazonaws.com/backend:latest",
+      "cpu": 1024,
+      "memory": 2048,
+      "memoryReservation": 1024,
+      "portMappings": [
+        {
+          "hostPort": 8081,
+          "containerPort": 8081,
+          "protocol": "tcp"
+        }
+      ],
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
@@ -13,53 +25,29 @@
       },
       "entryPoint": ["sh", "-c", "/backend/run.sh"],
       "workingDirectory": "/backend",
-      "portMappings": [
-        {
-          "hostPort": 8081,
-          "protocol": "tcp",
-          "containerPort": 8081
-        }
-      ],
       "environment": [
-        {
-          "name": "HUB",
-          "value": "US"
-        },
-        {
-          "name": "INITIAL_START",
-          "value": "true"
-        },
-        {
-          "name": "REGION",
-          "value": "us-east-1"
-        },
-        {
-          "name": "STAGE",
-          "value": "TEST"
-        }
+        { "name": "HUB", "value": "US" },
+        { "name": "INITIAL_START", "value": "true" },
+        { "name": "REGION", "value": "us-east-1" },
+        { "name": "STAGE", "value": "TEST" }
       ],
       "secrets": [
         {
-          "valueFrom": "arn:aws:secretsmanager:us-east-1:060758616165:secret:backend-secretsmanager-test-us-east-1",
-          "name": "SPRING_APPLICATION_JSON"
+          "name": "SPRING_APPLICATION_JSON",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:060758616165:secret:backend-secretsmanager-test-us-east-1"
         }
       ],
-      "cpu": 1024,
-      "memory": 2048,
-      "memoryReservation": 1024,
-      "image": "060758616165.dkr.ecr.us-east-1.amazonaws.com/backend:latest",
       "dockerLabels": {
         "PROMETHEUS_EXPORTER_PORT": "8081",
         "PROMETHEUS_EXPORTER_PATH": "/backend/status/v1/prometheus",
         "application": "backend",
         "PROMETHEUS_EXPORTER_JOB_NAME": "backend"
-      },
-      "name": "backend"
+      }
     }
   ],
   "taskRoleArn": "arn:aws:iam::060758616165:role/backend-ecs-task-role-us-east-1",
   "requiresCompatibilities": ["FARGATE"],
   "networkMode": "awsvpc",
-  "memory": "2048",
-  "cpu": "1024"
+  "cpu": "1024",
+  "memory": "2048"
 }
