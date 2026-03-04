@@ -30,13 +30,17 @@ delete_tfstate_bucket() {
   aws s3 rb s3://$TF_STATE_BUCKET --profile $PROFILE --region $REGION --force || true
 }
 
+
 delete_secrets_manager() {
+  SECRET_NAME="backend-secretsmanager-test-${REGION}"
+
   aws secretsmanager delete-secret \
-      --secret-id backend-secretsmanager-test-eu-central-1 \
+      --secret-id $SECRET_NAME \
       --force-delete-without-recovery \
-    	--profile $PROFILE \
-    	--region $REGION || true
+      --profile $PROFILE \
+      --region $REGION || true
 }
+
 
 empty_ecr() {
   ECR_REPOSITORY="backend"
