@@ -78,7 +78,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: backend
-
+          TAG: ${{ github.head_ref || github.ref_name }}
         run: |
           docker build -t backend .
           docker tag backend:latest $ECR_REGISTRY/$ECR_REPOSITORY:$TAG
